@@ -2,6 +2,7 @@ using System;
 using BaGet.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using NuGet.Versioning;
 
 namespace BaGet.Web
@@ -11,11 +12,13 @@ namespace BaGet.Web
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly LinkGenerator _linkGenerator;
+        private readonly IConfiguration _config;
 
-        public BaGetUrlGenerator(IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator)
+        public BaGetUrlGenerator(IHttpContextAccessor httpContextAccessor, LinkGenerator linkGenerator, IConfiguration config)
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _linkGenerator = linkGenerator ?? throw new ArgumentNullException(nameof(linkGenerator));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public string GetServiceIndexUrl()
@@ -23,7 +26,7 @@ namespace BaGet.Web
             return _linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.IndexRouteName,
-                values: null);
+                values: new { apikey = _config["ApiKey"] });
         }
 
         public string GetPackageContentResourceUrl()
