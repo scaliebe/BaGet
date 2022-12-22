@@ -1,0 +1,52 @@
+@page
+@model BaGet.Web.Pages.LoginModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="BaGet">
+    <meta name="author" content="Loic Sharma">
+
+    <link rel="shortcut icon" href="~/_content/BaGet.Web/favicon.ico">
+
+    <link rel="stylesheet" href="~/_content/BaGet.Web/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/_content/BaGet.Web/lib/office-ui-fabric-core/dist/css/fabric.min.css" />
+    <link rel="stylesheet" href="~/_content/BaGet.Web/css/site.css" />
+
+    <title>@ViewData["Title"] - BaGet</title>
+</head>
+<body>
+    <header>
+
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="container">
+                <div class="row">
+                </div>
+            </div>
+            <div class="container search-container">
+            </div>
+        </nav>
+    </header>
+
+    <section role="main" class="container main-container">
+        <form method="post">
+            <div class="form-group mb-50">
+                <label class="text-bold-600" for="userSecret">what's your secret?</label>
+                <input type="password" class="form-control" name="userSecret" id="userSecret" placeholder="secret">
+            </div>
+            <button type="submit" class="btn btn-primary glow position-relative w-100">Anmelden</button>
+        </form>
+    </section>
+
+    <script src="~/_content/BaGet.Web/lib/alpinejs/dist/alpine.js"></script>
+
+    <script src="~/_content/BaGet.Web/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/_content/BaGet.Web/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/_content/BaGet.Web/js/site.js" asp-append-version="true"></script>
+</body>
+</html>

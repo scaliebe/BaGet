@@ -1,12 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BaGet.Core;
 using BaGet.Protocol.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 
 namespace BaGet.Web
 {
@@ -14,9 +17,14 @@ namespace BaGet.Web
     {
         private readonly ISearchService _search;
 
-        public IndexModel(ISearchService search)
+        public readonly IHttpContextAccessor _currentContextAccessor;
+        private readonly IConfiguration _configuration;
+
+        public IndexModel(ISearchService search, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
         {
             _search = search ?? throw new ArgumentNullException(nameof(search));
+            _configuration = configuration;
+            _currentContextAccessor = httpContextAccessor;
         }
 
         public const int ResultsPerPage = 20;
@@ -41,6 +49,14 @@ namespace BaGet.Web
 
         public async Task<IActionResult> OnGetAsync(CancellationToken cancellationToken)
         {
+            if(!_currentContextAccessor.HttpContext.User.Claims
+                .Any(x => x.Type == "BaGet") ||
+                _currentContextAccessor.HttpContext.User.Claims.
+                Single(x => x.Type == "BaGet").Value != _configuration["ApiKey"])
+            {
+                return RedirectToPage("Login");
+            }
+
             if (!ModelState.IsValid) return BadRequest();
 
             var packageType = PackageType == "any" ? null : PackageType;

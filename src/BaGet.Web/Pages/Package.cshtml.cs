@@ -7,7 +7,10 @@ using System.Threading.Tasks;
 using BaGet.Core;
 using Markdig;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using NuGet.Frameworks;
 using NuGet.Versioning;
 
@@ -21,6 +24,8 @@ namespace BaGet.Web
         private readonly IPackageContentService _content;
         private readonly ISearchService _search;
         private readonly IUrlGenerator _url;
+        public readonly IHttpContextAccessor _currentContextAccessor;
+        private readonly IConfiguration _configuration;
 
         static PackageModel()
         {
@@ -33,12 +38,16 @@ namespace BaGet.Web
             IPackageService packages,
             IPackageContentService content,
             ISearchService search,
-            IUrlGenerator url)
+            IUrlGenerator url,
+            IHttpContextAccessor httpContextAccessor,
+            IConfiguration configuration)
         {
             _packages = packages ?? throw new ArgumentNullException(nameof(packages));
             _content = content ?? throw new ArgumentNullException(nameof(content));
             _search = search ?? throw new ArgumentNullException(nameof(search));
             _url = url ?? throw new ArgumentNullException(nameof(url));
+            _configuration = configuration;
+            _currentContextAccessor = httpContextAccessor;
         }
 
         public bool Found { get; private set; }
@@ -60,8 +69,16 @@ namespace BaGet.Web
         public string LicenseUrl { get; private set; }
         public string PackageDownloadUrl { get; private set; }
 
-        public async Task OnGetAsync(string id, string version, CancellationToken cancellationToken)
+        public async Task<IActionResult> OnGetAsync(string id, string version, CancellationToken cancellationToken)
         {
+            if (!_currentContextAccessor.HttpContext.User.Claims
+                .Any(x => x.Type == "BaGet") ||
+                _currentContextAccessor.HttpContext.User.Claims.
+                Single(x => x.Type == "BaGet").Value != _configuration["ApiKey"])
+            {
+                return RedirectToPage("Login");
+            }
+
             var packages = await _packages.FindPackagesAsync(id, cancellationToken);
             var listedPackages = packages.Where(p => p.Listed).ToList();
 
@@ -81,7 +98,7 @@ namespace BaGet.Web
             {
                 Package = new Package { Id = id };
                 Found = false;
-                return;
+                return Page();
             }
 
             var packageVersion = Package.Version;
@@ -108,6 +125,8 @@ namespace BaGet.Web
                 : Package.IconUrlString;
             LicenseUrl = Package.LicenseUrlString;
             PackageDownloadUrl = _url.GetPackageDownloadUrl(Package.Id, packageVersion);
+
+            return Page();
         }
 
         private IReadOnlyList<DependencyGroupModel> ToDependencyGroups(Package package)
