@@ -162,7 +162,7 @@ namespace BaGet.Web
                 "://",
                 request.Host.ToUriComponent(),
                 "/",
-                HttpUtility.UrlEncode(_config["ApiKey"]),
+                HttpUtility.UrlPathEncode(_config["ApiKey"]),
                 "/",
                 request.PathBase.ToUriComponent(),
                 "/",

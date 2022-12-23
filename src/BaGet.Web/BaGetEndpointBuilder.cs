@@ -33,7 +33,7 @@ namespace BaGet
             endpoints.MapControllerRoute(
                 name: Routes.IndexRouteName,
                 pattern: "{apikey}/v3/index.json",
-                defaults: new { controller = "ServiceIndex", action = "Get", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "ServiceIndex", action = "Get", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
         }
 
         public void MapPackagePublishRoutes(IEndpointRouteBuilder endpoints)
@@ -41,19 +41,19 @@ namespace BaGet
             endpoints.MapControllerRoute(
                 name: Routes.UploadPackageRouteName,
                 pattern: "{apikey}/api/v2/package",
-                defaults: new { controller = "PackagePublish", action = "Upload", apikey = HttpUtility.UrlEncode(_options.ApiKey) },
+                defaults: new { controller = "PackagePublish", action = "Upload", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) },
                 constraints: new { httpMethod = new HttpMethodRouteConstraint("PUT") });
 
             endpoints.MapControllerRoute(
                 name: Routes.DeleteRouteName,
                 pattern: "{apikey}/api/v2/package/{id}/{version}",
-                defaults: new { controller = "PackagePublish", action = "Delete", apikey = HttpUtility.UrlEncode(_options.ApiKey) },
+                defaults: new { controller = "PackagePublish", action = "Delete", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) },
                 constraints: new { httpMethod = new HttpMethodRouteConstraint("DELETE") });
 
             endpoints.MapControllerRoute(
                 name: Routes.RelistRouteName,
                 pattern: "{apikey}/api/v2/package/{id}/{version}",
-                defaults: new { controller = "PackagePublish", action = "Relist", apikey = HttpUtility.UrlEncode(_options.ApiKey) },
+                defaults: new { controller = "PackagePublish", action = "Relist", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) },
                 constraints: new { httpMethod = new HttpMethodRouteConstraint("POST") });
         }
 
@@ -62,18 +62,18 @@ namespace BaGet
             endpoints.MapControllerRoute(
                 name: Routes.UploadSymbolRouteName,
                 pattern: "{apikey}/api/v2/symbol",
-                defaults: new { controller = "Symbol", action = "Upload", apikey = HttpUtility.UrlEncode(_options.ApiKey) },
+                defaults: new { controller = "Symbol", action = "Upload", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) },
                 constraints: new { httpMethod = new HttpMethodRouteConstraint("PUT") });
 
             endpoints.MapControllerRoute(
                 name: Routes.SymbolDownloadRouteName,
                 pattern: "{apikey}/api/download/symbols/{file}/{key}/{file2}",
-                defaults: new { controller = "Symbol", action = "Get", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "Symbol", action = "Get", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
 
             endpoints.MapControllerRoute(
                 name: Routes.PrefixedSymbolDownloadRouteName,
                 pattern: "{apikey}/api/download/symbols/{prefix}/{file}/{key}/{file2}",
-                defaults: new { controller = "Symbol", action = "Get", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "Symbol", action = "Get", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
         }
 
         public void MapSearchRoutes(IEndpointRouteBuilder endpoints)
@@ -81,18 +81,18 @@ namespace BaGet
             endpoints.MapControllerRoute(
                 name: Routes.SearchRouteName,
                 pattern: "{apikey}/v3/search",
-                defaults: new { controller = "Search", action = "Search", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "Search", action = "Search", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
 
             endpoints.MapControllerRoute(
                 name: Routes.AutocompleteRouteName,
                 pattern: "{apikey}/v3/autocomplete",
-                defaults: new { controller = "Search", action = "Autocomplete", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "Search", action = "Autocomplete", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
 
             // This is an unofficial API to find packages that depend on a given package.
             endpoints.MapControllerRoute(
                 name: Routes.DependentsRouteName,
                 pattern: "{apikey}/v3/dependents",
-                defaults: new { controller = "Search", action = "Dependents", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "Search", action = "Dependents", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
         }
 
         public void MapPackageMetadataRoutes(IEndpointRouteBuilder endpoints)
@@ -100,12 +100,12 @@ namespace BaGet
             endpoints.MapControllerRoute(
                name: Routes.RegistrationIndexRouteName,
                pattern: "{apikey}/v3/registration/{id}/index.json",
-               defaults: new { controller = "PackageMetadata", action = "RegistrationIndex", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+               defaults: new { controller = "PackageMetadata", action = "RegistrationIndex", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
 
             endpoints.MapControllerRoute(
                 name: Routes.RegistrationLeafRouteName,
                 pattern: "{apikey}/v3/registration/{id}/{version}.json",
-                defaults: new { controller = "PackageMetadata", action = "RegistrationLeaf", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "PackageMetadata", action = "RegistrationLeaf", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
         }
 
         public void MapPackageContentRoutes(IEndpointRouteBuilder endpoints)
@@ -113,27 +113,27 @@ namespace BaGet
             endpoints.MapControllerRoute(
                 name: Routes.PackageVersionsRouteName,
                 pattern: "{apikey}/v3/package/{id}/index.json",
-                defaults: new { controller = "PackageContent", action = "GetPackageVersions", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "PackageContent", action = "GetPackageVersions", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
 
             endpoints.MapControllerRoute(
                 name: Routes.PackageDownloadRouteName,
                 pattern: "{apikey}/v3/package/{id}/{version}/{idVersion}.nupkg",
-                defaults: new { controller = "PackageContent", action = "DownloadPackage", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "PackageContent", action = "DownloadPackage", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
 
             endpoints.MapControllerRoute(
                 name: Routes.PackageDownloadManifestRouteName,
                 pattern: "{apikey}/v3/package/{id}/{version}/{id2}.nuspec",
-                defaults: new { controller = "PackageContent", action = "DownloadNuspec", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "PackageContent", action = "DownloadNuspec", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
 
             endpoints.MapControllerRoute(
                 name: Routes.PackageDownloadReadmeRouteName,
                 pattern: "{apikey}/v3/package/{id}/{version}/readme",
-                defaults: new { controller = "PackageContent", action = "DownloadReadme", apikey = HttpUtility.UrlEncode(_options.ApiKey) });
+                defaults: new { controller = "PackageContent", action = "DownloadReadme", apikey = HttpUtility.UrlPathEncode(_options.ApiKey) });
 
             endpoints.MapControllerRoute(
                 name: Routes.PackageDownloadIconRouteName,
                 pattern: "{apikey}/v3/package/{id}/{version}/icon",
-                defaults: new { controller = "PackageContent", action = "DownloadIcon", apikey = HttpUtility.UrlEncode(_options.ApiKey)});
+                defaults: new { controller = "PackageContent", action = "DownloadIcon", apikey = HttpUtility.UrlPathEncode(_options.ApiKey)});
         }
     }
 }
