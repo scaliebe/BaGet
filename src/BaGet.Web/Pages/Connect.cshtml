@@ -1,0 +1,22 @@
+@page
+@model BaGet.Web.Pages.ConnectModel
+@inject IUrlGenerator _url
+
+@{
+    ViewData["Title"] = "Connect to feed";
+
+    var baseUrl = Url.PageLink("/Index");
+    var publishUrl = _url.GetPackagePublishResourceUrl();
+    var serviceIndexUrl = _url.GetServiceIndexUrl();
+}
+
+<div class="col-sm-12">
+    <h1>Connect</h1>
+    <hr class="breadcrumb-divider" />
+
+    <div><h4><b>!KEEP THIS URL LIKE A SECRET BECAUSE IT'S THE SECRET!</b></h4></div>
+
+    <div>You can download packages using the service index <code>@serviceIndexUrl</code>.</div>
+
+</div>
+
