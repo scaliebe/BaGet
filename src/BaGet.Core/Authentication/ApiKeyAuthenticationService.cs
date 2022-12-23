@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using Microsoft.Extensions.Options;
 
 namespace BaGet.Core
@@ -14,6 +15,9 @@ namespace BaGet.Core
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             _apiKey = string.IsNullOrEmpty(options.Value.ApiKey) ? null : options.Value.ApiKey;
+
+            if(_apiKey != null)
+                _apiKey = HttpUtility.UrlDecode(_apiKey);
         }
 
         public Task<bool> AuthenticateAsync(string apiKey, CancellationToken cancellationToken)
