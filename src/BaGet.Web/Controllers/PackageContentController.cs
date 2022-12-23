@@ -15,14 +15,22 @@ namespace BaGet.Web
     public class PackageContentController : Controller
     {
         private readonly IPackageContentService _content;
+        private readonly IAuthenticationService _authentication;
 
-        public PackageContentController(IPackageContentService content)
+        public PackageContentController(IPackageContentService content, IAuthenticationService authentication)
         {
             _content = content ?? throw new ArgumentNullException(nameof(content));
+            _authentication = authentication ?? throw new ArgumentNullException(nameof(authentication));
         }
 
-        public async Task<ActionResult<PackageVersionsResponse>> GetPackageVersionsAsync(string id, CancellationToken cancellationToken)
+        public async Task<ActionResult<PackageVersionsResponse>> GetPackageVersionsAsync([FromRoute] string apikey, string id, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             var versions = await _content.GetPackageVersionsOrNullAsync(id, cancellationToken);
             if (versions == null)
             {
@@ -32,8 +40,14 @@ namespace BaGet.Web
             return versions;
         }
 
-        public async Task<IActionResult> DownloadPackageAsync(string id, string version, CancellationToken cancellationToken)
+        public async Task<IActionResult> DownloadPackageAsync([FromRoute] string apikey, string id, string version, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             if (!NuGetVersion.TryParse(version, out var nugetVersion))
             {
                 return NotFound();
@@ -48,8 +62,14 @@ namespace BaGet.Web
             return File(packageStream, "application/octet-stream");
         }
 
-        public async Task<IActionResult> DownloadNuspecAsync(string id, string version, CancellationToken cancellationToken)
+        public async Task<IActionResult> DownloadNuspecAsync([FromRoute] string apikey, string id, string version, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             if (!NuGetVersion.TryParse(version, out var nugetVersion))
             {
                 return NotFound();
@@ -64,8 +84,14 @@ namespace BaGet.Web
             return File(nuspecStream, "text/xml");
         }
 
-        public async Task<IActionResult> DownloadReadmeAsync(string id, string version, CancellationToken cancellationToken)
+        public async Task<IActionResult> DownloadReadmeAsync([FromRoute] string apikey, string id, string version, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             if (!NuGetVersion.TryParse(version, out var nugetVersion))
             {
                 return NotFound();
@@ -80,8 +106,14 @@ namespace BaGet.Web
             return File(readmeStream, "text/markdown");
         }
 
-        public async Task<IActionResult> DownloadIconAsync(string id, string version, CancellationToken cancellationToken)
+        public async Task<IActionResult> DownloadIconAsync([FromRoute] string apikey, string id, string version, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             if (!NuGetVersion.TryParse(version, out var nugetVersion))
             {
                 return NotFound();

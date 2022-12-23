@@ -35,10 +35,10 @@ namespace BaGet.Web
         }
 
         // See: https://docs.microsoft.com/en-us/nuget/api/package-publish-resource#push-a-package
-        public async Task Upload(CancellationToken cancellationToken)
+        public async Task Upload([FromRoute] string apikey, CancellationToken cancellationToken)
         {
             if (_options.Value.IsReadOnlyMode ||
-                !await _authentication.AuthenticateAsync(Request.GetApiKey(), cancellationToken))
+                !await _authentication.AuthenticateAsync(apikey, cancellationToken))
             {
                 HttpContext.Response.StatusCode = 401;
                 return;
@@ -81,8 +81,14 @@ namespace BaGet.Web
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(string id, string version, CancellationToken cancellationToken)
+        public async Task<IActionResult> Delete([FromRoute] string apikey, string id, string version, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             if (_options.Value.IsReadOnlyMode)
             {
                 return Unauthorized();
@@ -93,7 +99,7 @@ namespace BaGet.Web
                 return NotFound();
             }
 
-            if (!await _authentication.AuthenticateAsync(Request.GetApiKey(), cancellationToken))
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
             {
                 return Unauthorized();
             }
@@ -109,8 +115,14 @@ namespace BaGet.Web
         }
 
         [HttpPost]
-        public async Task<IActionResult> Relist(string id, string version, CancellationToken cancellationToken)
+        public async Task<IActionResult> Relist([FromRoute] string apikey, string id, string version, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             if (_options.Value.IsReadOnlyMode)
             {
                 return Unauthorized();
@@ -121,7 +133,7 @@ namespace BaGet.Web
                 return NotFound();
             }
 
-            if (!await _authentication.AuthenticateAsync(Request.GetApiKey(), cancellationToken))
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
             {
                 return Unauthorized();
             }

@@ -15,16 +15,24 @@ namespace BaGet.Web
     public class PackageMetadataController : Controller
     {
         private readonly IPackageMetadataService _metadata;
+        private readonly IAuthenticationService _authentication;
 
-        public PackageMetadataController(IPackageMetadataService metadata)
+        public PackageMetadataController(IPackageMetadataService metadata, IAuthenticationService authentication)
         {
             _metadata = metadata ?? throw new ArgumentNullException(nameof(metadata));
+            _authentication = authentication ?? throw new ArgumentNullException(nameof(authentication));
         }
 
         // GET v3/registration/{id}.json
         [HttpGet]
-        public async Task<ActionResult<BaGetRegistrationIndexResponse>> RegistrationIndexAsync(string id, CancellationToken cancellationToken)
+        public async Task<ActionResult<BaGetRegistrationIndexResponse>> RegistrationIndexAsync([FromRoute] string apikey, string id, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             var index = await _metadata.GetRegistrationIndexOrNullAsync(id, cancellationToken);
             if (index == null)
             {
@@ -36,8 +44,14 @@ namespace BaGet.Web
 
         // GET v3/registration/{id}/{version}.json
         [HttpGet]
-        public async Task<ActionResult<RegistrationLeafResponse>> RegistrationLeafAsync(string id, string version, CancellationToken cancellationToken)
+        public async Task<ActionResult<RegistrationLeafResponse>> RegistrationLeafAsync([FromRoute] string apikey, string id, string version, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             if (!NuGetVersion.TryParse(version, out var nugetVersion))
             {
                 return NotFound();

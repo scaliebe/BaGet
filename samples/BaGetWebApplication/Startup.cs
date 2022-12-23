@@ -1,13 +1,23 @@
 using BaGet;
+using BaGet.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace BaGetWebApplication
 {
     public class Startup
     {
+        private IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddBaGetWebApplication(app =>
@@ -20,6 +30,8 @@ namespace BaGetWebApplication
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var options = Configuration.Get<BaGetOptions>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -33,7 +45,7 @@ namespace BaGetWebApplication
                 // Add BaGet's endpoints.
                 var baget = new BaGetEndpointBuilder();
 
-                baget.MapEndpoints(endpoints);
+                baget.MapEndpoints(endpoints, );
             });
         }
     }

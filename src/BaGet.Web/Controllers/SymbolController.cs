@@ -31,9 +31,9 @@ namespace BaGet.Web
         }
 
         // See: https://docs.microsoft.com/en-us/nuget/api/package-publish-resource#push-a-package
-        public async Task Upload(CancellationToken cancellationToken)
+        public async Task Upload([FromRoute] string apikey, CancellationToken cancellationToken)
         {
-            if (_options.Value.IsReadOnlyMode || !await _authentication.AuthenticateAsync(Request.GetApiKey(), cancellationToken))
+            if (_options.Value.IsReadOnlyMode || !await _authentication.AuthenticateAsync(apikey, cancellationToken))
             {
                 HttpContext.Response.StatusCode = 401;
                 return;
@@ -75,8 +75,14 @@ namespace BaGet.Web
             }
         }
 
-        public async Task<IActionResult> Get(string file, string key)
+        public async Task<IActionResult> Get([FromRoute] string apikey, string file, string key, CancellationToken cancellationToken)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             var pdbStream = await _storage.GetPortablePdbContentStreamOrNullAsync(file, key);
             if (pdbStream == null)
             {

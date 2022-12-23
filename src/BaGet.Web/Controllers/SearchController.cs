@@ -10,13 +10,16 @@ namespace BaGet.Web
     public class SearchController : Controller
     {
         private readonly ISearchService _searchService;
+        private readonly IAuthenticationService _authentication;
 
-        public SearchController(ISearchService searchService)
+        public SearchController(ISearchService searchService, IAuthenticationService authentication)
         {
             _searchService = searchService ?? throw new ArgumentNullException(nameof(searchService));
+            _authentication = authentication ?? throw new ArgumentNullException(nameof(authentication));
         }
 
         public async Task<ActionResult<SearchResponse>> SearchAsync(
+            [FromRoute] string apikey,
             [FromQuery(Name = "q")] string query = null,
             [FromQuery]int skip = 0,
             [FromQuery]int take = 20,
@@ -43,6 +46,7 @@ namespace BaGet.Web
         }
 
         public async Task<ActionResult<AutocompleteResponse>> AutocompleteAsync(
+            [FromRoute] string apikey,
             [FromQuery(Name = "q")] string autocompleteQuery = null,
             [FromQuery(Name = "id")] string versionsQuery = null,
             [FromQuery]bool prerelease = false,
@@ -54,6 +58,12 @@ namespace BaGet.Web
             [FromQuery]string packageType = null,
             CancellationToken cancellationToken = default)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             // If only "id" is provided, find package versions. Otherwise, find package IDs.
             if (versionsQuery != null && autocompleteQuery == null)
             {
@@ -83,9 +93,16 @@ namespace BaGet.Web
         }
 
         public async Task<ActionResult<DependentsResponse>> DependentsAsync(
+            [FromRoute] string apikey,
             [FromQuery] string packageId = null,
             CancellationToken cancellationToken = default)
         {
+            if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
+            {
+                HttpContext.Response.StatusCode = 401;
+                return null;
+            }
+
             if (string.IsNullOrWhiteSpace(packageId))
             {
                 return BadRequest();

@@ -1,4 +1,5 @@
 using System;
+using System.Web;
 using BaGet.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -26,7 +27,7 @@ namespace BaGet.Web
             return _linkGenerator.GetUriByRouteValues(
                 _httpContextAccessor.HttpContext,
                 Routes.IndexRouteName,
-                values: new { apikey = _config["ApiKey"] });
+                values: null);
         }
 
         public string GetPackageContentResourceUrl()
@@ -160,6 +161,9 @@ namespace BaGet.Web
                 request.Scheme,
                 "://",
                 request.Host.ToUriComponent(),
+                "/",
+                HttpUtility.UrlEncode(_config["ApiKey"]),
+                "/",
                 request.PathBase.ToUriComponent(),
                 "/",
                 relativePath);

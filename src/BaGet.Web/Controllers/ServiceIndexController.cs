@@ -23,7 +23,7 @@ namespace BaGet.Web
 
         // GET v3/index
         [HttpGet]
-        public async Task<ServiceIndexResponse> GetAsync([FromQuery]string apikey, CancellationToken cancellationToken)
+        public async Task<ServiceIndexResponse> GetAsync([FromRoute]string apikey, CancellationToken cancellationToken)
         {
             if (!await _authentication.AuthenticateAsync(apikey, cancellationToken))
             {

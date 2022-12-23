@@ -101,7 +101,7 @@ namespace BaGet
             {
                 var baget = new BaGetEndpointBuilder();
 
-                baget.MapEndpoints(endpoints);
+                baget.MapEndpoints(endpoints, options);
             });
         }
     }
