@@ -15,9 +15,6 @@ namespace BaGet.Core
             if (options == null) throw new ArgumentNullException(nameof(options));
 
             _apiKey = string.IsNullOrEmpty(options.Value.ApiKey) ? null : options.Value.ApiKey;
-
-            if(_apiKey != null)
-                _apiKey = HttpUtility.UrlDecode(_apiKey);
         }
 
         public Task<bool> AuthenticateAsync(string apiKey, CancellationToken cancellationToken)
@@ -28,7 +25,7 @@ namespace BaGet.Core
             // No authentication is necessary if there is no required API key.
             if (_apiKey == null) return true;
 
-            return _apiKey == apiKey;
+            return _apiKey.ToLower() == HttpUtility.UrlDecode(apiKey).ToLower();
         }
     }
 }
