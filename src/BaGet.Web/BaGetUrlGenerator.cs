@@ -157,6 +157,8 @@ namespace BaGet.Web
         {
             var request = _httpContextAccessor.HttpContext.Request;
 
+
+
             return string.Concat(
                 request.Scheme,
                 "://",
@@ -164,9 +166,8 @@ namespace BaGet.Web
                 "/",
                 HttpUtility.UrlPathEncode(_config["ApiKey"]),
                 "/",
-                request.PathBase.ToUriComponent(),
-                "/",
-                relativePath);
+                !string.IsNullOrEmpty(request.PathBase.ToUriComponent()) ? request.PathBase.ToUriComponent() + "/" : string.Empty,
+                relativePath); ;
         }
     }
 }
