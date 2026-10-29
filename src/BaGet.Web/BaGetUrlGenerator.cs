@@ -156,18 +156,16 @@ namespace BaGet.Web
         private string AbsoluteUrl(string relativePath)
         {
             var request = _httpContextAccessor.HttpContext.Request;
-
-
+            var apiKey = HttpUtility.UrlPathEncode(_config["ApiKey"]);
 
             return string.Concat(
                 request.Scheme,
                 "://",
                 request.Host.ToUriComponent(),
+                request.PathBase.ToUriComponent().TrimEnd('/'),
                 "/",
-                HttpUtility.UrlPathEncode(_config["ApiKey"]),
-                "/",
-                !string.IsNullOrEmpty(request.PathBase.ToUriComponent()) ? request.PathBase.ToUriComponent() + "/" : string.Empty,
-                relativePath); ;
+                string.IsNullOrEmpty(apiKey) ? string.Empty : apiKey + "/",
+                relativePath);
         }
     }
 }
